@@ -2,6 +2,7 @@ package ru.sabo.commitcheckstyle;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.options.UnnamedConfigurable;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.CheckinProjectPanel;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.CommitContext;
@@ -10,6 +11,7 @@ import com.intellij.openapi.vcs.checkin.CheckinHandler;
 import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory;
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent;
 import com.intellij.util.PairConsumer;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +52,7 @@ public class BeforeCommitPlugin extends CheckinHandlerFactory {
                 CommitMessageStyleChecker checker = new CommitMessageStyleChecker(panel.getCommitMessage());
                 checker.check();
                 if (!checker.getCommitErrors().isEmpty()){
-                    return ReturnResult.CANCEL;
+                    return showYesNoCancel(String.join("\n", checker.getCommitErrors()));
                 } else {
                     return ReturnResult.COMMIT;
                 }
@@ -74,6 +76,24 @@ public class BeforeCommitPlugin extends CheckinHandlerFactory {
             @Override
             public boolean acceptExecutor(CommitExecutor executor) {
                 return super.acceptExecutor(executor);
+            }
+
+            private ReturnResult showYesNoCancel(String resultStr) {
+                final var answer = Messages.showYesNoCancelDialog(panel.getProject(),
+                        resultStr,
+                        "Bad Commit Message!",
+                        "Cancel Commit",
+                        "Continue",
+                        "Update Message",
+                        UIUtil.getWarningIcon());
+
+                if (answer == Messages.YES) {
+                    return ReturnResult.CLOSE_WINDOW;
+                } else if (answer == Messages.CANCEL) {
+                    return ReturnResult.CANCEL;
+                } else {
+                    return ReturnResult.COMMIT;
+                }
             }
         };
     }
