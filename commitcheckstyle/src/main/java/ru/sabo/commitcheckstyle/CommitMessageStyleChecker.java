@@ -21,54 +21,54 @@ public class CommitMessageStyleChecker {
 
     public void check() {
         if (commitMessage == null || commitMessage.isEmpty()) {
-            commitErrors.add("Пустое сообщение коммита!");
+            commitErrors.add("РџСѓСЃС‚РѕРµ СЃРѕРѕР±С‰РµРЅРёРµ РєРѕРјРјРёС‚Р°!");
             return;
         }
 
         if (!commitMessage.startsWith("fixes #") && !commitMessage.startsWith("refs #")) {
-            commitErrors.add("Сообщение не содержит статуса коммита!");
+            commitErrors.add("РЎРѕРѕР±С‰РµРЅРёРµ РЅРµ СЃРѕРґРµСЂР¶РёС‚ СЃС‚Р°С‚СѓСЃР° РєРѕРјРјРёС‚Р°!");
             return;
         }
 
         int positionNumberStart = commitMessage.indexOf(" #") + 2;
         int positionNumberEnd = positionNumberStart + 6;
         if (positionNumberEnd > commitMessage.length()) {
-            commitErrors.add("Сообщение не содержит номер задачи, либо он указан некорректно!");
+            commitErrors.add("РЎРѕРѕР±С‰РµРЅРёРµ РЅРµ СЃРѕРґРµСЂР¶РёС‚ РЅРѕРјРµСЂ Р·Р°РґР°С‡Рё, Р»РёР±Рѕ РѕРЅ СѓРєР°Р·Р°РЅ РЅРµРєРѕСЂСЂРµРєС‚РЅРѕ!");
             return;
         }
 
         String issueNumberString = commitMessage.substring(positionNumberStart, positionNumberEnd);
         boolean isNumeric = issueNumberString.chars().allMatch(Character::isDigit);
         if (!isNumeric) {
-            commitErrors.add("Сообщение не содержит номер задачи, либо он указан некорректно!");
+            commitErrors.add("РЎРѕРѕР±С‰РµРЅРёРµ РЅРµ СЃРѕРґРµСЂР¶РёС‚ РЅРѕРјРµСЂ Р·Р°РґР°С‡Рё, Р»РёР±Рѕ РѕРЅ СѓРєР°Р·Р°РЅ РЅРµРєРѕСЂСЂРµРєС‚РЅРѕ!");
         } else {
             if (!branchName.contains("_") || branchName.indexOf("_") + 1 > branchName.length() - 1) {
-                commitErrors.add("Некорректное имя ветки!");
+                commitErrors.add("РќРµРєРѕСЂСЂРµРєС‚РЅРѕРµ РёРјСЏ РІРµС‚РєРё!");
                 return;
             }
             String issueNumberFromBranch = branchName.substring(branchName.indexOf("_") + 1);
             if (!Objects.equals(issueNumberString, issueNumberFromBranch)) {
-                commitErrors.add("Номер задачи из коммита не совпадает с текущей веткой!");
+                commitErrors.add("РќРѕРјРµСЂ Р·Р°РґР°С‡Рё РёР· РєРѕРјРјРёС‚Р° РЅРµ СЃРѕРІРїР°РґР°РµС‚ СЃ С‚РµРєСѓС‰РµР№ РІРµС‚РєРѕР№!");
             }
         }
 
-        //todo подумать как прикрутить подтягивание задачи из редмайна
+        //todo РїРѕРґСѓРјР°С‚СЊ РєР°Рє РїСЂРёРєСЂСѓС‚РёС‚СЊ РїРѕРґС‚СЏРіРёРІР°РЅРёРµ Р·Р°РґР°С‡Рё РёР· СЂРµРґРјР°Р№РЅР°
 
         if (commitMessage.substring(positionNumberEnd).isBlank() || positionNumberEnd + 2 > commitMessage.length()) {
-            commitErrors.add("Пустое тело коммита!");
+            commitErrors.add("РџСѓСЃС‚РѕРµ С‚РµР»Рѕ РєРѕРјРјРёС‚Р°!");
             return;
         }
 
         if (!" ".equals(commitMessage.substring(positionNumberEnd, positionNumberEnd + 1))) {
-            commitErrors.add("После номера задачи должен быть пробел!");
+            commitErrors.add("РџРѕСЃР»Рµ РЅРѕРјРµСЂР° Р·Р°РґР°С‡Рё РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїСЂРѕР±РµР»!");
         }
 
         if (!commitMessage
                 .substring(positionNumberEnd + 1)
                 .trim()
                 .substring(0, 1)
-                .matches("[a-zA-Zа-яА-Я]")) {
-            commitErrors.add("Сообщение коммита должно начинаться с буквы!");
+                .matches("[a-zA-ZР°-СЏРђ-РЇ]")) {
+            commitErrors.add("РЎРѕРѕР±С‰РµРЅРёРµ РєРѕРјРјРёС‚Р° РґРѕР»Р¶РЅРѕ РЅР°С‡РёРЅР°С‚СЊСЃСЏ СЃ Р±СѓРєРІС‹!");
         }
     }
 
